@@ -321,6 +321,34 @@ export function Session() {
       },
     },
     {
+      title: "Share session locally",
+      value: "session.share-local",
+      suggested: route.type === "session",
+      category: "Session",
+      enabled: sync.data.config.share !== "disabled",
+      slash: {
+        name: "share-local",
+      },
+      onSelect: async (dialog) => {
+        await sdk.client.session
+          .shareLocal({
+            sessionID: route.sessionID,
+          })
+          .then((res) => {
+            const { path, shareID } = res.data!
+            Clipboard.copy(path).catch(() =>
+              toast.show({ message: "Failed to copy path to clipboard", variant: "error" }),
+            )
+            toast.show({
+              message: `Local share generated! ID: ${shareID}. Path copied to clipboard.`,
+              variant: "success",
+            })
+          })
+          .catch(() => toast.show({ message: "Failed to generate local share", variant: "error" }))
+        dialog.clear()
+      },
+    },
+    {
       title: "Rename session",
       value: "session.rename",
       keybind: "session_rename",

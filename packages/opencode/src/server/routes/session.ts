@@ -481,6 +481,43 @@ export const SessionRoutes = lazy(() =>
       },
     )
     .post(
+      "/:sessionID/share-local",
+      describeRoute({
+        summary: "Share session locally",
+        description: "Generate a local HTML file for a session that can be shared offline.",
+        operationId: "session.shareLocal",
+        responses: {
+          200: {
+            description: "Successfully generated local share",
+            content: {
+              "application/json": {
+                schema: resolver(
+                  z.object({
+                    path: z.string(),
+                    shareID: z.string(),
+                  }),
+                ),
+              },
+            },
+          },
+          ...errors(400, 404),
+        },
+      }),
+      validator(
+        "param",
+        z.object({
+          sessionID: z.string(),
+        }),
+      ),
+      async (c) => {
+        const { ShareLocal } = await import("@/share/share-local")
+        const sessionID = c.req.valid("param").sessionID
+        const htmlPath = await ShareLocal.generateHTML(sessionID)
+        const shareID = ShareLocal.generateShareID(sessionID)
+        return c.json({ path: htmlPath, shareID })
+      },
+    )
+    .post(
       "/:sessionID/summarize",
       describeRoute({
         summary: "Summarize session",

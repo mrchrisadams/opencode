@@ -3072,6 +3072,42 @@ export type SessionDiffResponses = {
 
 export type SessionDiffResponse = SessionDiffResponses[keyof SessionDiffResponses]
 
+export type SessionShareLocalData = {
+  body?: never
+  path: {
+    sessionID: string
+  }
+  query?: {
+    directory?: string
+  }
+  url: "/session/{sessionID}/share-local"
+}
+
+export type SessionShareLocalErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type SessionShareLocalError = SessionShareLocalErrors[keyof SessionShareLocalErrors]
+
+export type SessionShareLocalResponses = {
+  /**
+   * Successfully generated local share
+   */
+  200: {
+    path: string
+    shareID: string
+  }
+}
+
+export type SessionShareLocalResponse = SessionShareLocalResponses[keyof SessionShareLocalResponses]
+
 export type SessionSummarizeData = {
   body?: {
     providerID: string

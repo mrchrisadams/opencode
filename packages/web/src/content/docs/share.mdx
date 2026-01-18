@@ -37,6 +37,14 @@ By default, OpenCode uses manual sharing mode. Sessions are not shared automatic
 
 This will generate a unique URL that'll be copied to your clipboard.
 
+OpenCode also provides a local sharing option that generates an HTML file on your computer instead of uploading to a remote service:
+
+```
+/share-local
+```
+
+This creates an HTML file in your project's `.opencode/shares/` directory that contains the same content as the remote share, but can only be accessed locally.
+
 To explicitly set manual mode in your [config file](/docs/config):
 
 ```json title="opencode.json"

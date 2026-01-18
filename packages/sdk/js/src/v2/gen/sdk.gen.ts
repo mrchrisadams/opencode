@@ -119,6 +119,8 @@ import type {
   SessionRevertErrors,
   SessionRevertResponses,
   SessionShareErrors,
+  SessionShareLocalErrors,
+  SessionShareLocalResponses,
   SessionShareResponses,
   SessionShellErrors,
   SessionShellResponses,
@@ -1188,6 +1190,36 @@ export class Session extends HeyApiClient {
     )
     return (options?.client ?? this.client).get<SessionDiffResponses, unknown, ThrowOnError>({
       url: "/session/{sessionID}/diff",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Share session locally
+   *
+   * Generate a local HTML file for a session that can be shared offline.
+   */
+  public shareLocal<ThrowOnError extends boolean = false>(
+    parameters: {
+      sessionID: string
+      directory?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "sessionID" },
+            { in: "query", key: "directory" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<SessionShareLocalResponses, SessionShareLocalErrors, ThrowOnError>({
+      url: "/session/{sessionID}/share-local",
       ...options,
       ...params,
     })
