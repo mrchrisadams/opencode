@@ -17,6 +17,8 @@ But it also accepts commands as documented on this page. This allows you to inte
 opencode run "Explain how closures work in JavaScript"
 ```
 
+For sharing conversations, OpenCode provides both [remote sharing](/docs/share) and [local sharing](/docs/local-share) options through CLI commands.
+
 ---
 
 ### tui
@@ -442,6 +444,39 @@ You can import from a local file or an OpenCode share URL.
 ```bash
 opencode import session.json
 opencode import https://opncd.ai/s/abc123
+```
+
+---
+
+### share-local
+
+Generate a local HTML share of a session without publishing online.
+
+```bash
+opencode share-local [session]
+```
+
+Creates an HTML file in your project's `.opencode/shares/` directory containing the conversation that can be opened in any web browser. The file path is copied to your clipboard upon successful generation.
+
+If you don't provide a session ID, you'll be prompted to select from available sessions.
+
+#### Flags
+
+| Flag     | Short | Description                                  |
+| -------- | ----- | -------------------------------------------- |
+| `--open` | `-o`  | Open the generated HTML file in your browser |
+
+#### Examples
+
+```bash
+# Generate local share for current or last session
+opencode share-local
+
+# Generate local share for specific session
+opencode share-local session_abc123def456
+
+# Generate local share and open in browser
+opencode share-local session_abc123def456 --open
 ```
 
 ---

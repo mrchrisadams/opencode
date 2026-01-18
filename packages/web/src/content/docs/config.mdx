@@ -372,7 +372,11 @@ This takes:
 - `"auto"` - Automatically share new conversations
 - `"disabled"` - Disable sharing entirely
 
-By default, sharing is set to manual mode where you need to explicitly share conversations using the `/share` command.
+By default, sharing is set to manual mode where you need to explicitly share conversations using the `/share` or `/share-local` commands.
+
+:::note
+When sharing is set to `"disabled"`, both remote and local sharing commands are disabled. The [`/share-local`](/docs/cli#share-local) command respects the same sharing configuration as the remote sharing feature.
+:::
 
 ---
 

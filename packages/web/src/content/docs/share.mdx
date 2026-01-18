@@ -9,6 +9,8 @@ OpenCode's share feature allows you to create public links to your OpenCode conv
 Shared conversations are publicly accessible to anyone with the link.
 :::
 
+OpenCode also provides a [local sharing option](/docs/local-share) that generates HTML files on your computer instead of uploading to a remote service, allowing you to share conversations offline.
+
 ---
 
 ## How it works
@@ -134,3 +136,16 @@ For enterprise deployments, the share feature can be:
 - **Self-hosted** on your own infrastructure
 
 [Learn more](/docs/enterprise) about using opencode in your organization.
+
+---
+
+## Troubleshooting
+
+If you're having issues with sharing:
+
+- **Permission denied**: Check that your [sharing configuration](/docs/config#sharing) allows sharing
+- **Network errors**: Verify your internet connection for remote sharing
+- **Large conversations**: Very large conversations may take longer to process
+- **File access issues**: For local sharing, ensure you have write permissions to the `.opencode/shares/` directory
+
+For detailed troubleshooting of local sharing issues, see the [local share troubleshooting guide](/docs/local-share#troubleshooting).

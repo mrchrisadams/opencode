@@ -1,0 +1,164 @@
+---
+title: Local Share
+description: Technical reference for OpenCode's local sharing feature.
+---
+
+OpenCode's local share feature generates HTML files containing your conversation history that can be shared offline without uploading to any remote service.
+
+---
+
+## How It Works
+
+When you use the `/share-local` command or `opencode share-local` CLI command, OpenCode:
+
+1. Collects all session data (messages, parts, diffs, models)
+2. Generates a share ID using the same algorithm as remote shares
+3. Creates a standalone HTML file with embedded CSS and JavaScript
+4. Saves the file to `.opencode/shares/{share-id}.html` in your project directory
+5. Copies the file path to your clipboard
+
+---
+
+## File Storage
+
+Local shares are stored in your project's `.opencode/shares/` directory:
+
+```
+.opencode/
+└── shares/
+    ├── abc123ef.html
+    ├── def456gh.html
+    └── ...
+```
+
+Each HTML file is completely self-contained and can be opened in any modern web browser without an internet connection.
+
+---
+
+## Share ID Generation
+
+Local shares use the same share ID generation algorithm as remote shares:
+
+- For regular sessions: Last 8 characters of the session ID
+- For test sessions: `test_` prefix + last 8 characters of the session ID
+
+This ensures consistency between local and remote shares when referencing the same session.
+
+---
+
+## HTML File Structure
+
+The generated HTML files include:
+
+- Complete conversation history with proper formatting
+- Syntax highlighting for code blocks
+- Diff visualization for file changes
+- Responsive design that works on different screen sizes
+- Embedded CSS and JavaScript for offline viewing
+
+The files are designed to look identical to the remote share pages at `opncd.ai/s/{share-id}`.
+
+---
+
+## Configuration
+
+Local sharing respects the same [sharing configuration](/docs/config#sharing) as remote sharing:
+
+- When `share` is set to `"disabled"`, local sharing is also disabled
+- When `share` is set to `"manual"`, local sharing requires explicit command invocation
+- When `share` is set to `"auto"`, local sharing is available but not automatic (same as remote)
+
+---
+
+## Security Considerations
+
+Since local shares are stored on your filesystem:
+
+- Files are only accessible to users with filesystem access to your project
+- No data is transmitted over the network
+- Files persist until manually deleted
+- Share IDs are not globally unique (only unique within your project)
+
+For sensitive conversations, be mindful of file system permissions and consider deleting local share files when no longer needed.
+
+---
+
+## Enterprise Considerations
+
+In enterprise deployments:
+
+- Local sharing can be disabled by setting `share` to `"disabled"` in organizational config
+- Files are stored locally and not transmitted to any central server
+- No additional compliance considerations beyond standard file storage policies
+- Can be used as an alternative to remote sharing for air-gapped environments
+
+---
+
+## Troubleshooting
+
+### File Not Generated
+
+If the HTML file isn't being generated:
+
+- Check that you have write permissions to the `.opencode/shares/` directory
+- Verify the session ID is valid
+- Check the OpenCode logs for error messages
+
+### File Not Opening
+
+If the HTML file doesn't open properly in your browser:
+
+- Try opening in a different browser
+- Check that the file wasn't corrupted during generation
+- Verify your browser supports modern HTML5 features
+
+### Path Not Copied to Clipboard
+
+If the file path isn't copied to your clipboard:
+
+- Check that your system clipboard is functioning
+- Try using the `--open` flag with the CLI command to open directly
+- Manually navigate to `.opencode/shares/` in your file explorer
+
+---
+
+## API Reference
+
+### Backend Endpoint
+
+```
+POST /session/{sessionID}/share-local
+```
+
+Generates a local HTML share for the specified session.
+
+#### Parameters
+
+- `sessionID` (path): The ID of the session to share locally
+
+#### Response
+
+```json
+{
+  "path": "/path/to/project/.opencode/shares/abc123ef.html",
+  "shareID": "abc123ef"
+}
+```
+
+### SDK Method
+
+```javascript
+const result = await client.session.shareLocal({
+  sessionID: "session_abc123def456...",
+})
+```
+
+Returns the same response structure as the backend endpoint.
+
+---
+
+## Related Resources
+
+- [Sharing Documentation](/docs/share) - Overview of OpenCode's sharing features
+- [CLI Documentation](/docs/cli) - Command-line interface reference
+- [Configuration](/docs/config) - Configuration options including sharing settings
