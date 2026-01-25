@@ -35,6 +35,40 @@ export namespace MessageV2 {
   )
   export type APIError = z.infer<typeof APIError.Schema>
 
+  // Energy tracking schema - supports measured data from providers (GreenPT, Neuralwatt)
+  // or estimated data calculated from token counts
+  export const Energy = z
+    .object({
+      // Normalized energy values
+      wh: z.number().optional(), // Watt-hours
+      kwh: z.number().optional(), // Kilowatt-hours
+      joules: z.number().optional(), // Joules
+
+      // Carbon emissions
+      gCO2e: z.number().optional(), // Grams CO2 equivalent
+
+      // Metadata
+      source: z.enum(["measured", "estimated"]),
+      provider: z.string().optional(), // 'greenpt', 'neuralwatt', 'opencode', plugin name
+      method: z.string().optional(), // Calculation method used
+
+      // Grid carbon intensity (if carbon was calculated)
+      gridIntensity: z
+        .object({
+          value: z.number(), // gCO2e/kWh
+          region: z.string(), // 'global', 'us-west', etc.
+          source: z.string().optional(), // 'electricitymaps', 'static'
+        })
+        .optional(),
+
+      // Raw provider data (for debugging/analysis)
+      raw: z.record(z.unknown()).optional(),
+    })
+    .meta({
+      ref: "Energy",
+    })
+  export type Energy = z.infer<typeof Energy>
+
   const PartBase = z.object({
     id: z.string(),
     sessionID: z.string(),
@@ -212,6 +246,8 @@ export namespace MessageV2 {
         write: z.number(),
       }),
     }),
+    // Energy data for this step (measured from provider or estimated)
+    energy: Energy.optional(),
   }).meta({
     ref: "StepFinishPart",
   })
@@ -385,6 +421,8 @@ export namespace MessageV2 {
       }),
     }),
     finish: z.string().optional(),
+    // Aggregated energy for full response (sum of all steps)
+    energy: Energy.optional(),
   }).meta({
     ref: "AssistantMessage",
   })
@@ -422,6 +460,25 @@ export namespace MessageV2 {
         sessionID: z.string(),
         messageID: z.string(),
         partID: z.string(),
+      }),
+    ),
+    // Energy tracking event - published when energy data is captured for a step
+    EnergyUpdated: BusEvent.define(
+      "message.energy.updated",
+      z.object({
+        sessionID: z.string(),
+        messageID: z.string(),
+        partID: z.string().optional(),
+        energy: Energy,
+        context: z.object({
+          modelID: z.string(),
+          providerID: z.string(),
+          tokens: z.object({
+            input: z.number(),
+            output: z.number(),
+            reasoning: z.number(),
+          }),
+        }),
       }),
     ),
   }
