@@ -185,6 +185,91 @@ export interface Hooks {
       metadata: any
     },
   ) => Promise<void>
+  /**
+   * Called when energy data is captured for a message step.
+   *
+   * Plugins can use this to:
+   * - Log energy data to external services
+   * - Modify/enhance energy calculations (e.g., with better grid intensity data)
+   *
+   * If the plugin modifies output.energy, those changes are persisted.
+   */
+  "message.energy"?: (
+    input: {
+      sessionID: string
+      messageID: string
+      partID?: string
+      modelID: string
+      providerID: string
+      tokens: {
+        input: number
+        output: number
+        reasoning: number
+        cache: {
+          read: number
+          write: number
+        }
+      }
+      region?: string
+    },
+    output: {
+      energy: {
+        wh?: number
+        kwh?: number
+        joules?: number
+        gCO2e?: number
+        source: "measured" | "estimated"
+        provider?: string
+        method?: string
+        gridIntensity?: {
+          value: number
+          region: string
+          source?: string
+        }
+        raw?: Record<string, unknown>
+      }
+    },
+  ) => Promise<void>
+  /**
+   * Called to request energy estimation when provider doesn't supply measured data.
+   *
+   * Plugins can implement custom estimation logic. If no plugin provides an estimate,
+   * OpenCode uses built-in defaults based on model coefficients.
+   */
+  "message.energy.estimate"?: (
+    input: {
+      sessionID: string
+      messageID: string
+      modelID: string
+      providerID: string
+      tokens: {
+        input: number
+        output: number
+        reasoning: number
+        cache: {
+          read: number
+          write: number
+        }
+      }
+    },
+    output: {
+      energy?: {
+        wh?: number
+        kwh?: number
+        joules?: number
+        gCO2e?: number
+        source: "measured" | "estimated"
+        provider?: string
+        method?: string
+        gridIntensity?: {
+          value: number
+          region: string
+          source?: string
+        }
+        raw?: Record<string, unknown>
+      }
+    },
+  ) => Promise<void>
   "experimental.chat.messages.transform"?: (
     input: {},
     output: {
